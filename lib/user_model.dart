@@ -39,13 +39,21 @@ class User {
     String apiUrl = "https://reqres.in/api/users?page=$page";
     var apiResult = await http.get(Uri.parse(apiUrl));
     var jsonObject = json.decode(apiResult.body);
+    print("ini json object");
+    print(jsonObject);
+    print("\n=\n");
+    print("ini json list user");
 
     List<dynamic> listUser = (jsonObject as Map<String, dynamic>)["data"];
+    print(listUser);
     List<User> users = [];
     for (var i = 0; i < listUser.length; i++) {
       users.add(User.createUser(listUser[i]));
     }
 
+    print("=");
+    print("ini users");
+    print(users);
     return users;
   }
 }
