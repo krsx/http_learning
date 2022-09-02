@@ -2,6 +2,7 @@ import 'package:api_learning/todo_model.dart';
 import 'package:api_learning/trial_page_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 
 class TrialPage extends StatefulWidget {
   const TrialPage({Key? key}) : super(key: key);
@@ -12,10 +13,41 @@ class TrialPage extends StatefulWidget {
 
 class _TrialPageState extends State<TrialPage> {
   TodoModel? todo;
+  TodoModel? postedTodo;
   String output = "No data";
   List title = [];
   List detail = [];
   List isDone = [];
+
+  Widget buttonDelete() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ButtonStyle(
+          elevation: MaterialStateProperty.all(0),
+          padding: MaterialStateProperty.all(
+            const EdgeInsets.symmetric(vertical: 10),
+          ),
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all(Colors.blue),
+        ),
+        onPressed: () {
+          TodoModel.delete('6');
+        },
+        child: Text(
+          "DELETE",
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget buttonGet() {
     return SizedBox(
@@ -39,7 +71,8 @@ class _TrialPageState extends State<TrialPage> {
           isDone.clear();
 
           TodoModel.getTodos().then((value) {
-            output = "";
+            // output = "";
+            // print(value);
             for (var i = 0; i < value.length; i++) {
               title.add(value[i].title);
               detail.add(value[i].detail);
@@ -81,9 +114,48 @@ class _TrialPageState extends State<TrialPage> {
           detail.clear();
           isDone.clear();
           setState(() {});
+          // print(title.isEmpty);
         },
         child: Text(
           "RESTART",
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buttonPost() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ButtonStyle(
+          elevation: MaterialStateProperty.all(0),
+          padding: MaterialStateProperty.all(
+            const EdgeInsets.symmetric(vertical: 10),
+          ),
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all(Colors.blue),
+        ),
+        onPressed: () {
+          TodoModel.postTodos(
+            "Ini title",
+            "Ini detail",
+            false,
+          ).then((value) {
+            postedTodo = value;
+          });
+
+          setState(() {});
+        },
+        child: Text(
+          "POST",
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w500,
             fontSize: 16,
@@ -116,8 +188,12 @@ class _TrialPageState extends State<TrialPage> {
             // Text(
             //   output,
             // ),
-            (title.isNotEmpty)
-                ? Expanded(
+
+            (title.isEmpty)
+                ? Center(
+                    child: Text(output),
+                  )
+                : Expanded(
                     child: ListView.builder(
                       itemCount: title.length,
                       itemBuilder: (context, index) {
@@ -202,11 +278,11 @@ class _TrialPageState extends State<TrialPage> {
                         );
                       },
                     ),
-                  )
-                : Center(
-                    child: Text(output),
                   ),
             // const Spacer(),
+            Text((postedTodo != null)
+                ? "${postedTodo!.title} - ${postedTodo!.detail}"
+                : "Nothing posted!"),
             buttonGet(),
             const SizedBox(
               height: 20,
@@ -215,6 +291,11 @@ class _TrialPageState extends State<TrialPage> {
             const SizedBox(
               height: 20,
             ),
+            buttonPost(),
+            const SizedBox(
+              height: 20,
+            ),
+            buttonDelete(),
           ],
         ),
       ),
